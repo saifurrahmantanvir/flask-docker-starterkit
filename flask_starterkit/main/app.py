@@ -6,4 +6,4 @@ flask_app = create_app()
 
 @flask_app.route("/")
 def home_route():
-    return "Hello World !"
+    return "Introduction to DevOps CI/CD with Flask Starter Kit!"
