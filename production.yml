@@ -1,0 +1,47 @@
+# docker compose -f production.yml up
+services:
+  flaskapp:
+    container_name: flaskapp
+    image: saifurtanvir/flaskimage:${VERSION:?please set the version}
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+      target: debug
+    ports:
+      - 5000:5000
+    volumes:
+      - .:/flask_starterkit:cached
+    env_file: .env
+    restart: on-failure:5
+    depends_on:
+      - db
+    networks:
+      - server-network
+
+  db:
+    container_name: mysqldb-container
+    image: mysql
+    restart: on-failure:3
+    environment:
+      - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/mysql_db_password
+      - MYSQL_DATABASE=flaskdb
+      - MYSQL_USER=flaskuser
+      - MYSQL_PASSWORD=passwd
+    networks:
+      - server-network
+    volumes:
+      - mysqldata:/var/lib/mysql
+    secrets:
+      - mysql_db_password
+
+volumes:
+  mysqldata:
+
+
+networks:
+  server-network:
+
+
+secrets:
+  mysql_db_password:
+    environment: "mysql_db_password"
